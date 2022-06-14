@@ -5,10 +5,12 @@ int index = 100;
 int fps = 60;
 int beats = 8;
 int instruments = 6;
+int activeLength = 0;
+int activeBeat = 1;
 
 // Screen Area
-double kScreenWidth = ScrnSizer.screenWidth() * 0.96;
-double kScreenHeight = ScrnSizer.screenHeight() * 0.9;
+double kScreenWidth = ScrnSizer.screenWidth();
+double kScreenHeight = ScrnSizer.screenHeight();
 
 //instruments title area
 double instrumentsColumnWidth = kScreenWidth / 8 * 1.5;
@@ -20,10 +22,10 @@ double gridWidth = kScreenWidth - instrumentsColumnWidth - (2 * beats);
 double gridHeight = instrumentsColumnHeight;
 
 //Grid button area
-double gridButtonWidth = gridWidth - 12 / (beats);
-double gridButtonHeight = gridHeight + 12 / (instruments);
+double gridButtonWidth = ((gridWidth - 12) / (beats));
+double gridButtonHeight = ((gridHeight + 12) / instruments);
 
 //Buttom area
-double bottomAreaHeight = kScreenHeight - instrumentsColumnHeight - 5;
+double bottomAreaHeight = kScreenHeight - instrumentsColumnHeight - 6;
 double bottomAreaWidth =
-    instrumentsColumnWidth + gridWidth - ScrnSizer.screenWidth() * 0.01;
+    instrumentsColumnWidth + gridWidth - (ScrnSizer.screenWidth() * 0.01);

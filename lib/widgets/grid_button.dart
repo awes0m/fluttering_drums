@@ -14,6 +14,9 @@ class GridButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onTapDown: (TapDownDetails details) {
+        print('index: ${(index / instruments * beats).floor()}');
+      },
       child: Container(
         width: gridButtonWidth,
         height: gridButtonHeight,

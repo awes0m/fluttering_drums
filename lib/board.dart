@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttering_drums/utils/app_constants.dart';
+import 'package:fluttering_drums/utils/colors.dart';
 import 'package:fluttering_drums/utils/utils.dart';
 import 'package:fluttering_drums/widgets/instrument_name_tile.dart';
 
@@ -13,6 +14,12 @@ class Board extends StatefulWidget {
 }
 
 class _BoardState extends State<Board> {
+  bool beatChanged = true;
+  List<List<bool>> clicked = [
+    for (var i = 0; i < instruments; i += 1)
+      [for (var i = 0; i < beats; i += 1) false]
+  ];
+  List<bool> activeList = [for (var i = 0; i < instruments; i += 1) true];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,12 +50,12 @@ class _BoardState extends State<Board> {
                       child: ListView(
                           physics: const NeverScrollableScrollPhysics(),
                           children: const [
-                            InstrumentNameTile(instrumentName: 'Drums'),
-                            InstrumentNameTile(instrumentName: 'Bass'),
-                            InstrumentNameTile(instrumentName: 'Guitar'),
-                            InstrumentNameTile(instrumentName: 'Piano'),
-                            InstrumentNameTile(instrumentName: 'Saxophone'),
-                            InstrumentNameTile(instrumentName: 'Trumpet'),
+                            InstrumentNameTile(instrumentName: 'Hi Hat'),
+                            InstrumentNameTile(instrumentName: 'Snare'),
+                            InstrumentNameTile(instrumentName: 'Kick'),
+                            InstrumentNameTile(instrumentName: 'Crash'),
+                            InstrumentNameTile(instrumentName: 'Clap'),
+                            InstrumentNameTile(instrumentName: 'Floor Tom'),
                           ]),
                     ),
 
@@ -67,18 +74,33 @@ class _BoardState extends State<Board> {
                           width: 1,
                         ),
                       ),
-                      child: GridView.count(
-                        childAspectRatio: (gridHeight / gridWidth) *
-                            ((beats - 0.1) / instruments),
-                        crossAxisSpacing: 2,
-                        mainAxisSpacing: 2,
-                        crossAxisCount: instruments,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: List.generate(
-                          beats * instruments,
-                          (index) => GridButton(index: index),
-                        ),
+                      child: Stack(
+                        children: [
+                          ///grid buttons
+                          GridView.count(
+                            childAspectRatio: (gridHeight / gridWidth) *
+                                ((beats - 0.1) / instruments),
+                            crossAxisSpacing: 2,
+                            mainAxisSpacing: 2,
+                            crossAxisCount: instruments,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: List.generate(
+                              beats * instruments,
+                              (index) => GridButton(index: index),
+                            ),
+                          ),
+                          Container(
+                            height: gridHeight,
+                            width: gridButtonWidth,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.blue,
+                                width: 3,
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ],
@@ -95,7 +117,7 @@ class _BoardState extends State<Board> {
                   height: bottomAreaHeight,
                   width: bottomAreaWidth,
                   decoration: BoxDecoration(
-                    // color: Colors.black,
+                    color: lightGray,
                     border: Border.all(
                       color: Colors.black,
                       width: 1,
