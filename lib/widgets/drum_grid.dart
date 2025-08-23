@@ -1,44 +1,52 @@
 import 'package:flutter/material.dart';
 import '../viewmodels/drum_view_model.dart';
+import '../services/theme_service.dart';
 
 class DrumGrid extends StatelessWidget {
   final DrumViewModel viewModel;
 
-  const DrumGrid({
-    super.key,
-    required this.viewModel,
-  });
+  const DrumGrid({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
     final state = viewModel.state;
-    
+    final themeService = ThemeService();
+    final isDark = themeService.themeMode == ThemeMode.dark;
+
     if (state.instruments.isEmpty || state.pattern.isEmpty) {
       return const Center(
-        child: CircularProgressIndicator(
-          color: Colors.orange,
-        ),
+        child: CircularProgressIndicator(color: Colors.orange),
       );
     }
+
+    final headerColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : (Colors.grey[200] ?? Colors.grey.shade200);
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final secondaryTextColor = isDark ? Colors.white70 : Colors.black54;
+    final borderColor = isDark
+        ? Colors.white30
+        : (Colors.grey[400] ?? Colors.grey.shade400);
+    final activeBorderColor = Colors.orange;
 
     return Column(
       children: [
         // Grid Header
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Color(0xFF3D3D3D),
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            color: headerColor,
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(12),
               topRight: Radius.circular(12),
             ),
           ),
           child: Row(
             children: [
-              const Text(
+              Text(
                 'Beat Pattern',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -55,7 +63,7 @@ class DrumGrid extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Grid Content
         Expanded(
           child: Container(
@@ -74,8 +82,8 @@ class DrumGrid extends StatelessWidget {
                           child: Center(
                             child: Text(
                               '${beatIndex + 1}',
-                              style: const TextStyle(
-                                color: Colors.white70,
+                              style: TextStyle(
+                                color: secondaryTextColor,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -86,9 +94,9 @@ class DrumGrid extends StatelessWidget {
                     }),
                   ],
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Drum pattern grid
                 Expanded(
                   child: ListView.builder(
@@ -106,54 +114,71 @@ class DrumGrid extends StatelessWidget {
                               child: Text(
                                 instrument.displayName,
                                 style: TextStyle(
-                                  color: instrument.isActive 
-                                      ? Colors.white 
-                                      : Colors.white54,
+                                  color: instrument.isActive
+                                      ? textColor
+                                      : secondaryTextColor,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                            
+
                             // Beat buttons
                             Expanded(
                               child: Row(
-                                children: List.generate(state.beats, (beatIndex) {
-                                  final isActive = state.pattern[instrumentIndex][beatIndex] == 1;
-                                  final isCurrentBeat = state.isPlaying && 
-                                                       state.currentBeat == beatIndex;
-                                  
+                                children: List.generate(state.beats, (
+                                  beatIndex,
+                                ) {
+                                  final isActive =
+                                      state
+                                          .pattern[instrumentIndex][beatIndex] ==
+                                      1;
+                                  final isCurrentBeat =
+                                      state.isPlaying &&
+                                      state.currentBeat == beatIndex;
+
                                   return Expanded(
                                     child: Container(
                                       height: 50,
-                                      margin: const EdgeInsets.symmetric(horizontal: 2),
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 2,
+                                      ),
                                       child: GestureDetector(
                                         onTap: () {
                                           if (instrument.isActive) {
-                                            viewModel.toggleBeat(instrumentIndex, beatIndex);
+                                            viewModel.toggleBeat(
+                                              instrumentIndex,
+                                              beatIndex,
+                                            );
                                           }
                                         },
                                         child: AnimatedContainer(
-                                          duration: const Duration(milliseconds: 150),
+                                          duration: const Duration(
+                                            milliseconds: 150,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: isActive
-                                                ? (instrument.isActive 
-                                                    ? Colors.green 
-                                                    : Colors.grey)
+                                                ? (instrument.isActive
+                                                      ? Colors.green
+                                                      : Colors.grey)
                                                 : Colors.transparent,
                                             border: Border.all(
                                               color: isCurrentBeat
-                                                  ? Colors.orange
-                                                  : Colors.white30,
+                                                  ? activeBorderColor
+                                                  : borderColor,
                                               width: isCurrentBeat ? 3 : 1,
                                             ),
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                           ),
                                           child: Center(
                                             child: isActive
-                                                ? const Icon(
+                                                ? Icon(
                                                     Icons.music_note,
-                                                    color: Colors.white,
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : Colors.black87,
                                                     size: 20,
                                                   )
                                                 : null,
