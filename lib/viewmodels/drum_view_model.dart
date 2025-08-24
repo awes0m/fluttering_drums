@@ -4,11 +4,13 @@ import '../models/drum_instrument.dart';
 import '../models/drum_beat.dart';
 import '../services/audio_service.dart';
 import '../services/storage_service.dart';
+import '../services/export_service.dart';
 
 class DrumViewModel extends ChangeNotifier {
   Timer? _playbackTimer;
   final AudioService _audioService = AudioService();
   final StorageService _storageService = StorageService();
+  final ExportService _exportService = ExportService();
 
   DrumState _state = const DrumState();
   DrumState get state => _state;
@@ -228,6 +230,37 @@ class DrumViewModel extends ChangeNotifier {
   Future<void> loadSavedBeats() async {
     final savedBeats = await _storageService.getSavedBeats();
     _updateState(_state.copyWith(savedBeats: savedBeats));
+  }
+
+  /// Export current beat pattern as MP3
+  Future<String?> exportCurrentBeatToMp3(String fileName, {int repetitions = 1}) async {
+    if (_state.instruments.isEmpty || _state.pattern.isEmpty) {
+      return null;
+    }
+
+    final beat = DrumBeat(
+      name: fileName,
+      beats: _state.beats,
+      bpm: _state.bpm,
+      pattern: _state.pattern,
+    );
+
+    return await _exportService.exportBeatToMp3(
+      beat: beat,
+      instruments: _state.instruments,
+      fileName: fileName,
+      repetitions: repetitions,
+    );
+  }
+
+  /// Export a saved beat as MP3
+  Future<String?> exportSavedBeatToMp3(DrumBeat beat, String fileName, {int repetitions = 1}) async {
+    return await _exportService.exportBeatToMp3(
+      beat: beat,
+      instruments: _state.instruments,
+      fileName: fileName,
+      repetitions: repetitions,
+    );
   }
 
   void _updateState(DrumState newState) {

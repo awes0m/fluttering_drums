@@ -2,35 +2,21 @@ import 'package:flutter/material.dart';
 import '../viewmodels/drum_view_model.dart';
 import '../services/theme_service.dart';
 
-class InstrumentPanel extends StatefulWidget {
+class InstrumentPanel extends StatelessWidget {
   final DrumViewModel viewModel;
+  final bool isMobileLandscape;
 
-  const InstrumentPanel({super.key, required this.viewModel});
-
-  @override
-  State<InstrumentPanel> createState() => _InstrumentPanelState();
-}
-
-class _InstrumentPanelState extends State<InstrumentPanel> {
-  bool _isCollapsed = false;
+  const InstrumentPanel({
+    super.key, 
+    required this.viewModel,
+    this.isMobileLandscape = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final state = widget.viewModel.state;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final state = viewModel.state;
     final themeService = ThemeService();
     final isDark = themeService.themeMode == ThemeMode.dark;
-
-    // Auto-collapse on very narrow screens, but keep visible
-    if (screenWidth < 500 && !_isCollapsed) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {
-            _isCollapsed = true;
-          });
-        }
-      });
-    }
 
     if (state.instruments.isEmpty) {
       return const Center(
@@ -48,21 +34,18 @@ class _InstrumentPanelState extends State<InstrumentPanel> {
         ? Colors.white30
         : (Colors.grey[300] ?? Colors.grey.shade300);
 
-    // Responsive width based on screen size
-    final maxWidth = screenWidth < 600 ? 160.0 : 200.0;
-    final collapsedWidth = screenWidth < 600 ? 50.0 : 60.0;
-    final currentWidth = _isCollapsed ? collapsedWidth : maxWidth;
+    // Fixed width - no more collapsing
+    final panelWidth = isMobileLandscape ? 120.0 : 160.0;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: currentWidth,
-      margin: EdgeInsets.all(screenWidth < 600 ? 8.0 : 16.0),
+    return Container(
+      width: panelWidth,
+      margin: EdgeInsets.all(isMobileLandscape ? 4.0 : 8.0),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.15),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -70,11 +53,21 @@ class _InstrumentPanelState extends State<InstrumentPanel> {
       ),
       child: Column(
         children: [
-          // Header with collapse button
+          // Modern Header Design
           Container(
-            padding: EdgeInsets.all(screenWidth < 600 ? 12.0 : 16.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobileLandscape ? 8.0 : 12.0,
+              vertical: isMobileLandscape ? 8.0 : 12.0,
+            ),
             decoration: BoxDecoration(
-              color: headerColor,
+              gradient: LinearGradient(
+                colors: [
+                  Colors.orange.withOpacity(0.8),
+                  Colors.deepOrange.withOpacity(0.6),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -82,233 +75,159 @@ class _InstrumentPanelState extends State<InstrumentPanel> {
             ),
             child: Row(
               children: [
-                if (!_isCollapsed) ...[
-                  Icon(
-                    Icons.music_note,
-                    color: Colors.orange,
-                    size: screenWidth < 600 ? 16 : 20,
-                  ),
-                  SizedBox(width: screenWidth < 600 ? 6 : 8),
-                  Expanded(
-                    child: Text(
-                      'Instruments',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: screenWidth < 600 ? 14 : 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Icon(
+                  Icons.library_music,
+                  color: Colors.white,
+                  size: isMobileLandscape ? 16 : 20,
+                ),
+                SizedBox(width: isMobileLandscape ? 6 : 8),
+                Expanded(
+                  child: Text(
+                    'Instruments',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isMobileLandscape ? 12 : 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
                     ),
-                  ),
-                ],
-                IconButton(
-                  onPressed: () {
-                    if (mounted) {
-                      setState(() {
-                        _isCollapsed = !_isCollapsed;
-                      });
-                    }
-                  },
-                  icon: Icon(
-                    _isCollapsed ? Icons.chevron_right : Icons.chevron_left,
-                    color: Colors.orange,
-                    size: screenWidth < 600 ? 18 : 20,
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(
-                    minWidth: screenWidth < 600 ? 20 : 24,
-                    minHeight: screenWidth < 600 ? 20 : 24,
                   ),
                 ),
               ],
             ),
           ),
 
-          // Instruments List
+          // Instruments List with improved design
           Expanded(
-            child: _isCollapsed
-                ? _buildCollapsedView(
-                    isDark,
-                    textColor,
-                    secondaryTextColor,
-                    borderColor,
-                    screenWidth,
-                  )
-                : _buildExpandedView(
-                    isDark,
-                    textColor,
-                    secondaryTextColor,
-                    borderColor,
-                    screenWidth,
-                  ),
+            child: _buildInstrumentsList(
+              isDark,
+              textColor,
+              secondaryTextColor,
+              borderColor,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildExpandedView(
+  Widget _buildInstrumentsList(
     bool isDark,
     Color textColor,
     Color secondaryTextColor,
     Color borderColor,
-    double screenWidth,
   ) {
-    final state = widget.viewModel.state;
-    final isSmallScreen = screenWidth < 600;
+    final state = viewModel.state;
 
     return ListView.builder(
-      padding: EdgeInsets.all(isSmallScreen ? 12.0 : 16.0),
+      padding: EdgeInsets.all(isMobileLandscape ? 6.0 : 8.0),
       itemCount: state.instruments.length,
       itemBuilder: (context, index) {
         final instrument = state.instruments[index];
         return Container(
-          margin: EdgeInsets.only(bottom: isSmallScreen ? 8.0 : 12.0),
-          child: Column(
-            children: [
-              // Instrument Row
-              Row(
-                children: [
-                  // Toggle Button
-                  GestureDetector(
-                    onTap: () => widget.viewModel.toggleInstrument(index),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: isSmallScreen ? 20 : 24,
-                      height: isSmallScreen ? 20 : 24,
-                      decoration: BoxDecoration(
-                        color: instrument.isActive ? Colors.green : Colors.grey,
-                        borderRadius: BorderRadius.circular(
-                          isSmallScreen ? 10 : 12,
-                        ),
-                        border: Border.all(color: borderColor, width: 2),
-                      ),
-                      child: instrument.isActive
-                          ? Icon(
-                              Icons.check,
-                              color: isDark ? Colors.white : Colors.black87,
-                              size: isSmallScreen ? 12 : 16,
-                            )
-                          : null,
-                    ),
-                  ),
-
-                  SizedBox(width: isSmallScreen ? 8 : 12),
-
-                  // Instrument Name
-                  Expanded(
-                    child: Text(
-                      instrument.displayName,
-                      style: TextStyle(
-                        color: instrument.isActive
-                            ? textColor
-                            : secondaryTextColor,
-                        fontSize: isSmallScreen ? 12 : 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-
-                  // Play Button
-                  GestureDetector(
-                    onTap: () => widget.viewModel.playInstrument(index),
-                    child: Container(
-                      width: isSmallScreen ? 28 : 32,
-                      height: isSmallScreen ? 28 : 32,
-                      decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(
-                          isSmallScreen ? 14 : 16,
-                        ),
-                        border: Border.all(color: Colors.orange),
-                      ),
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.orange,
-                        size: isSmallScreen ? 16 : 20,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // Divider
-              if (index < state.instruments.length - 1)
-                Container(
-                  margin: EdgeInsets.only(top: isSmallScreen ? 8 : 12),
-                  height: 1,
-                  color: borderColor,
-                ),
-            ],
+          margin: EdgeInsets.only(bottom: isMobileLandscape ? 4.0 : 6.0),
+          padding: EdgeInsets.all(isMobileLandscape ? 6.0 : 8.0),
+          decoration: BoxDecoration(
+            color: instrument.isActive 
+                ? Colors.orange.withOpacity(0.1)
+                : (isDark ? Colors.grey[800] : Colors.grey[50]),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: instrument.isActive 
+                  ? Colors.orange.withOpacity(0.3)
+                  : borderColor.withOpacity(0.3),
+              width: 1,
+            ),
           ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCollapsedView(
-    bool isDark,
-    Color textColor,
-    Color secondaryTextColor,
-    Color borderColor,
-    double screenWidth,
-  ) {
-    final state = widget.viewModel.state;
-    final isSmallScreen = screenWidth < 600;
-
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(
-        vertical: isSmallScreen ? 6 : 8,
-        horizontal: isSmallScreen ? 4 : 8,
-      ),
-      itemCount: state.instruments.length,
-      itemBuilder: (context, index) {
-        final instrument = state.instruments[index];
-        return Container(
-          margin: EdgeInsets.symmetric(vertical: isSmallScreen ? 2 : 4),
-          child: Column(
+          child: Row(
             children: [
-              // Toggle Button
+              // Modern Toggle Switch
               GestureDetector(
-                onTap: () => widget.viewModel.toggleInstrument(index),
+                onTap: () => viewModel.toggleInstrument(index),
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: isSmallScreen ? 28 : 32,
-                  height: isSmallScreen ? 28 : 32,
+                  duration: const Duration(milliseconds: 300),
+                  width: isMobileLandscape ? 20 : 24,
+                  height: isMobileLandscape ? 20 : 24,
                   decoration: BoxDecoration(
-                    color: instrument.isActive ? Colors.green : Colors.grey,
-                    borderRadius: BorderRadius.circular(
-                      isSmallScreen ? 14 : 16,
-                    ),
-                    border: Border.all(color: borderColor, width: 2),
+                    gradient: instrument.isActive
+                        ? LinearGradient(
+                            colors: [Colors.green, Colors.green.shade400],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : LinearGradient(
+                            colors: [Colors.grey, Colors.grey.shade400],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (instrument.isActive ? Colors.green : Colors.grey)
+                            .withOpacity(0.3),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: instrument.isActive
                       ? Icon(
                           Icons.check,
-                          color: isDark ? Colors.white : Colors.black87,
-                          size: isSmallScreen ? 12 : 16,
+                          color: Colors.white,
+                          size: isMobileLandscape ? 12 : 14,
                         )
                       : null,
                 ),
               ),
 
-              // Play Button
-              SizedBox(height: isSmallScreen ? 2 : 4),
+              SizedBox(width: isMobileLandscape ? 6 : 8),
+
+              // Instrument Name with better typography
+              Expanded(
+                child: Text(
+                  instrument.displayName,
+                  style: TextStyle(
+                    color: instrument.isActive ? textColor : secondaryTextColor,
+                    fontSize: isMobileLandscape ? 10 : 12,
+                    fontWeight: instrument.isActive 
+                        ? FontWeight.w600 
+                        : FontWeight.w500,
+                    letterSpacing: 0.3,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+
+              SizedBox(width: isMobileLandscape ? 4 : 6),
+
+              // Modern Play Button
               GestureDetector(
-                onTap: () => widget.viewModel.playInstrument(index),
+                onTap: () => viewModel.playInstrument(index),
                 child: Container(
-                  width: isSmallScreen ? 20 : 24,
-                  height: isSmallScreen ? 20 : 24,
+                  width: isMobileLandscape ? 20 : 24,
+                  height: isMobileLandscape ? 20 : 24,
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(
-                      isSmallScreen ? 10 : 12,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.orange.withOpacity(0.8),
+                        Colors.deepOrange.withOpacity(0.6),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    border: Border.all(color: Colors.orange),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.orange.withOpacity(0.3),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Icon(
                     Icons.play_arrow,
-                    color: Colors.orange,
-                    size: isSmallScreen ? 10 : 14,
+                    color: Colors.white,
+                    size: isMobileLandscape ? 12 : 14,
                   ),
                 ),
               ),

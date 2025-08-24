@@ -4,8 +4,13 @@ import '../services/theme_service.dart';
 
 class DrumGrid extends StatelessWidget {
   final DrumViewModel viewModel;
+  final bool isMobileLandscape;
 
-  const DrumGrid({super.key, required this.viewModel});
+  const DrumGrid({
+    super.key, 
+    required this.viewModel,
+    this.isMobileLandscape = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +36,14 @@ class DrumGrid extends StatelessWidget {
 
     return Column(
       children: [
-        // Grid Header
+        // Grid Header - Compact for mobile landscape
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(isMobileLandscape ? 8.0 : 12.0),
           decoration: BoxDecoration(
             color: headerColor,
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
+              topLeft: Radius.circular(8),
+              topRight: Radius.circular(8),
             ),
           ),
           child: Row(
@@ -47,16 +52,16 @@ class DrumGrid extends StatelessWidget {
                 'Beat Pattern',
                 style: TextStyle(
                   color: textColor,
-                  fontSize: 18,
+                  fontSize: isMobileLandscape ? 14 : 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const Spacer(),
               Text(
                 '${state.beats} Beats',
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.orange,
-                  fontSize: 16,
+                  fontSize: isMobileLandscape ? 12 : 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -64,27 +69,29 @@ class DrumGrid extends StatelessWidget {
           ),
         ),
 
-        // Grid Content
+        // Grid Content - Optimized for mobile landscape
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(isMobileLandscape ? 6.0 : 12.0),
             child: Column(
               children: [
-                // Beat numbers row
+                // Beat numbers row - Compact for mobile
                 Row(
                   children: [
-                    const SizedBox(width: 100), // Space for instrument names
+                    SizedBox(width: isMobileLandscape ? 60 : 80), // Space for instrument names
                     ...List.generate(state.beats, (beatIndex) {
                       return Expanded(
                         child: Container(
-                          height: 30,
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          height: isMobileLandscape ? 20 : 24,
+                          margin: EdgeInsets.symmetric(
+                            horizontal: isMobileLandscape ? 1 : 2,
+                          ),
                           child: Center(
                             child: Text(
                               '${beatIndex + 1}',
                               style: TextStyle(
                                 color: secondaryTextColor,
-                                fontSize: 12,
+                                fontSize: isMobileLandscape ? 10 : 12,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -95,35 +102,38 @@ class DrumGrid extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 8),
+                SizedBox(height: isMobileLandscape ? 4 : 8),
 
-                // Drum pattern grid
+                // Drum pattern grid - Compact rows for mobile landscape
                 Expanded(
                   child: ListView.builder(
                     itemCount: state.instruments.length,
                     itemBuilder: (context, instrumentIndex) {
                       final instrument = state.instruments[instrumentIndex];
                       return Container(
-                        height: 60,
-                        margin: const EdgeInsets.only(bottom: 8),
+                        height: isMobileLandscape ? 36 : 48,
+                        margin: EdgeInsets.only(
+                          bottom: isMobileLandscape ? 4 : 6,
+                        ),
                         child: Row(
                           children: [
-                            // Instrument name
+                            // Instrument name - Shorter for mobile
                             SizedBox(
-                              width: 100,
+                              width: isMobileLandscape ? 60 : 80,
                               child: Text(
                                 instrument.displayName,
                                 style: TextStyle(
                                   color: instrument.isActive
                                       ? textColor
                                       : secondaryTextColor,
-                                  fontSize: 14,
+                                  fontSize: isMobileLandscape ? 10 : 12,
                                   fontWeight: FontWeight.w500,
                                 ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
 
-                            // Beat buttons
+                            // Beat buttons - Optimized touch targets for mobile
                             Expanded(
                               child: Row(
                                 children: List.generate(state.beats, (
@@ -139,9 +149,9 @@ class DrumGrid extends StatelessWidget {
 
                                   return Expanded(
                                     child: Container(
-                                      height: 50,
-                                      margin: const EdgeInsets.symmetric(
-                                        horizontal: 2,
+                                      height: isMobileLandscape ? 32 : 40,
+                                      margin: EdgeInsets.symmetric(
+                                        horizontal: isMobileLandscape ? 1 : 2,
                                       ),
                                       child: GestureDetector(
                                         onTap: () {
@@ -166,10 +176,10 @@ class DrumGrid extends StatelessWidget {
                                               color: isCurrentBeat
                                                   ? activeBorderColor
                                                   : borderColor,
-                                              width: isCurrentBeat ? 3 : 1,
+                                              width: isCurrentBeat ? 2 : 1,
                                             ),
                                             borderRadius: BorderRadius.circular(
-                                              8,
+                                              isMobileLandscape ? 6 : 8,
                                             ),
                                           ),
                                           child: Center(
@@ -179,7 +189,7 @@ class DrumGrid extends StatelessWidget {
                                                     color: isDark
                                                         ? Colors.white
                                                         : Colors.black87,
-                                                    size: 20,
+                                                    size: isMobileLandscape ? 14 : 18,
                                                   )
                                                 : null,
                                           ),

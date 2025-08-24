@@ -1,0 +1,455 @@
+Launching lib\main.dart on sdk gphone64 x86 64 in debug mode...
+Your project is configured with Android NDK 26.3.11579264, but the following plugin(s) depend on a different Android NDK version:
+- audio_session requires Android NDK 27.0.12077973
+- just_audio requires Android NDK 27.0.12077973
+- path_provider_android requires Android NDK 27.0.12077973
+- shared_preferences_android requires Android NDK 27.0.12077973
+Fix this issue by using the highest Android NDK version (they are backward compatible).
+Add the following to D:\Vscode Projects\Flutter\git_repos\fluttering-drums\fluttering_drums\android\app\build.gradle.kts:
+
+    android {
+        ndkVersion = "27.0.12077973"
+        ...
+    }
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+I/flutter ( 4184): [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+Connecting to VM Service at ws://127.0.0.1:63803/CmtySV4ndwU=/ws
+Connected to the VM Service.
+I/Choreographer( 4184): Skipped 82 frames!  The application may be doing too much work on its main thread.
+I/luttering_drums( 4184): Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+I/Choreographer( 4184): Skipped 132 frames!  The application may be doing too much work on its main thread.
+D/ProfileInstaller( 4184): Installing profile for awes0m.github.io.fluttering_drums
+I/ExoPlayerImpl( 4184): Init 67f03d1 [AndroidXMedia3/1.4.1] [emu64xa, sdk_gphone64_x86_64, Google, 35]
+W/luttering_drums( 4184): Accessing hidden method Landroid/media/AudioTrack;->getLatency()I (unsupported, reflection, allowed)
+
+════════ Exception caught by rendering library ═════════════════════════════════
+The following assertion was thrown during performResize():
+Vertical viewport was given unbounded height.
+Viewports expand in the scrolling direction to fill their container. In this case, a vertical viewport was given an unlimited amount of vertical space in which to expand. This situation typically happens when a scrollable widget is nested inside another scrollable widget.
+If this widget is always nested in a scrollable widget there is no need to use a viewport because there will always be enough vertical space for the children. In this case, consider using a Column or Wrap instead. Otherwise, consider using a CustomScrollView to concatenate arbitrary slivers into a single scrollable.
+
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+
+When the exception was thrown, this was the stack:
+#0      debugCheckHasBoundedAxis.<anonymous closure> (package:flutter/src/rendering/debug.dart:358:13)
+#1      debugCheckHasBoundedAxis (package:flutter/src/rendering/debug.dart:417:4)
+#2      RenderViewport.computeDryLayout (package:flutter/src/rendering/viewport.dart:1440:12)
+#3      RenderBox.performResize (package:flutter/src/rendering/box.dart:2873:12)
+#4      RenderObject.layout (package:flutter/src/rendering/object.dart:2745:9)
+#5      RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#6      RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#7      RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#8      RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#9      RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#10     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#11     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#12     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#13     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#14     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#15     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#16     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#17     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#18     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#19     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#20     _RenderCustomClip.performLayout (package:flutter/src/rendering/proxy_box.dart:1483:11)
+#21     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#22     ChildLayoutHelper.layoutChild (package:flutter/src/rendering/layout_helper.dart:62:11)
+#23     RenderFlex._computeSizes (package:flutter/src/rendering/flex.dart:1161:28)
+#24     RenderFlex.performLayout (package:flutter/src/rendering/flex.dart:1255:32)
+#25     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#26     RenderPadding.performLayout (package:flutter/src/rendering/shifted_box.dart:243:12)
+#27     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#28     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#29     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#30     RenderConstrainedBox.performLayout (package:flutter/src/rendering/proxy_box.dart:293:14)
+#31     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#32     RenderPadding.performLayout (package:flutter/src/rendering/shifted_box.dart:243:12)
+#33     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#34     ChildLayoutHelper.layoutChild (package:flutter/src/rendering/layout_helper.dart:62:11)
+#35     RenderFlex._computeSizes (package:flutter/src/rendering/flex.dart:1161:28)
+#36     RenderFlex.performLayout (package:flutter/src/rendering/flex.dart:1255:32)
+#37     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#38     _RenderSingleChildViewport.performLayout (package:flutter/src/widgets/single_child_scroll_view.dart:501:14)
+#39     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#40     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#41     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#42     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#43     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#44     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#45     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#46     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#47     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#48     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#49     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#50     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#51     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#52     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#53     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#54     RenderProxyBoxMixin.performLayout (package:flutter/src/rendering/proxy_box.dart:115:18)
+#55     _RenderCustomClip.performLayout (package:flutter/src/rendering/proxy_box.dart:1483:11)
+#56     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#57     _RenderLayoutBuilder.performLayout (package:flutter/src/widgets/layout_builder.dart:451:14)
+#58     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#59     ChildLayoutHelper.layoutChild (package:flutter/src/rendering/layout_helper.dart:62:11)
+#60     RenderFlex._computeSizes (package:flutter/src/rendering/flex.dart:1202:26)
+#61     RenderFlex.performLayout (package:flutter/src/rendering/flex.dart:1255:32)
+#62     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#63     RenderPadding.performLayout (package:flutter/src/rendering/shifted_box.dart:243:12)
+#64     RenderObject.layout (package:flutter/src/rendering/object.dart:2766:7)
+#65     MultiChildLayoutDelegate.layoutChild (package:flutter/src/rendering/custom_layout.dart:180:12)
+#66     _ScaffoldLayout.performLayout (package:flutter/src/material/scaffold.dart:1118:7)
+#67     MultiChildLayoutDelegate._callPerformLayout (package:flutter/src/rendering/custom_layout.dart:249:7)
+#68     RenderCustomMultiChildLayoutBox.performLayout (package:flutter/src/rendering/custom_layout.dart:419:14)
+#69     RenderObject._layoutWithoutResize (package:flutter/src/rendering/object.dart:2614:7)
+#70     PipelineOwner.flushLayout (package:flutter/src/rendering/object.dart:1160:18)
+#71     PipelineOwner.flushLayout (package:flutter/src/rendering/object.dart:1173:15)
+#72     RendererBinding.drawFrame (package:flutter/src/rendering/binding.dart:629:23)
+#73     WidgetsBinding.drawFrame (package:flutter/src/widgets/binding.dart:1242:13)
+#74     RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:495:5)
+#75     SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1438:15)
+#76     SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1351:9)
+#77     SchedulerBinding._handleDrawFrame (package:flutter/src/scheduler/binding.dart:1204:5)
+#78     _invoke (dart:ui/hooks.dart:331:13)
+#79     PlatformDispatcher._drawFrame (dart:ui/platform_dispatcher.dart:444:5)
+#80     _drawFrame (dart:ui/hooks.dart:303:31)
+
+The following RenderObject was being processed when the exception was fired: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+    needs compositing
+    parentData: <none> (can use size)
+    constraints: BoxConstraints(0.0<=w<=60.0, 0.0<=h<=Infinity)
+    size: MISSING
+    axisDirection: down
+    crossAxisDirection: right
+    offset: ScrollPositionWithSingleContext#5193e(offset: 0.0, range: null..null, viewport: null, ScrollableState, AlwaysScrollableScrollPhysics -> ClampingScrollPhysics -> RangeMaintainingScrollPhysics, IdleScrollActivity#43cea, ScrollDirection.idle)
+    anchor: 0.0
+    center child: RenderSliverPadding#4b431 NEEDS-LAYOUT NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+        parentData: paintOffset=Offset(0.0, 0.0)
+        constraints: MISSING
+        geometry: null
+        padding: EdgeInsets(4.0, 6.0, 4.0, 6.0)
+        textDirection: ltr
+        child: RenderSliverList#80d4a NEEDS-LAYOUT NEEDS-PAINT
+            parentData: paintOffset=Offset(0.0, 0.0)
+            constraints: MISSING
+            geometry: null
+            no children current live
+RenderObject: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+    needs compositing
+    parentData: <none> (can use size)
+    constraints: BoxConstraints(0.0<=w<=60.0, 0.0<=h<=Infinity)
+    size: MISSING
+    axisDirection: down
+    crossAxisDirection: right
+    offset: ScrollPositionWithSingleContext#5193e(offset: 0.0, range: null..null, viewport: null, ScrollableState, AlwaysScrollableScrollPhysics -> ClampingScrollPhysics -> RangeMaintainingScrollPhysics, IdleScrollActivity#43cea, ScrollDirection.idle)
+    anchor: 0.0
+    center child: RenderSliverPadding#4b431 NEEDS-LAYOUT NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+        parentData: paintOffset=Offset(0.0, 0.0)
+        constraints: MISSING
+        geometry: null
+        padding: EdgeInsets(4.0, 6.0, 4.0, 6.0)
+        textDirection: ltr
+        child: RenderSliverList#80d4a NEEDS-LAYOUT NEEDS-PAINT
+            parentData: paintOffset=Offset(0.0, 0.0)
+            constraints: MISSING
+            geometry: null
+            no children current live
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderIgnorePointer#f6f76 relayoutBoundary=up26 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderSemanticsAnnotations#7bab4 relayoutBoundary=up25 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderPointerListener#848e2 relayoutBoundary=up24 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderSemanticsGestureHandler#55455 relayoutBoundary=up23 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderPointerListener#2c4ed relayoutBoundary=up22 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: _RenderScrollSemantics#2bd8d relayoutBoundary=up21 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderTransform#5120b relayoutBoundary=up20 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderClipRect#68284 relayoutBoundary=up19 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    Column Column:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:76:14
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderFlex#94269 relayoutBoundary=up18 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderPadding#ae39c relayoutBoundary=up17 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderConstrainedBox#3931d relayoutBoundary=up15 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderPadding#2271b relayoutBoundary=up14 NEEDS-PAINT NEEDS-COMPOSITING-BITS-UPDATE
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    Row Row:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/views/drum_screen.dart:138:28
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+D/EGL_emulation( 4184): app_time_stats: avg=700.60ms min=284.16ms max=1504.00ms count=3
+D/CompatChangeReporter( 4184): Compat change id reported: 291868760; UID 10210; state: ENABLED
+I/ExoPlayerImpl( 4184): Init 59d931f [AndroidXMedia3/1.4.1] [emu64xa, sdk_gphone64_x86_64, Google, 35]
+I/ExoPlayerImpl( 4184): Init 939207a [AndroidXMedia3/1.4.1] [emu64xa, sdk_gphone64_x86_64, Google, 35]
+I/ExoPlayerImpl( 4184): Init e456991 [AndroidXMedia3/1.4.1] [emu64xa, sdk_gphone64_x86_64, Google, 35]
+I/ExoPlayerImpl( 4184): Init 2e15194 [AndroidXMedia3/1.4.1] [emu64xa, sdk_gphone64_x86_64, Google, 35]
+I/ExoPlayerImpl( 4184): Init 9cd573 [AndroidXMedia3/1.4.1] [emu64xa, sdk_gphone64_x86_64, Google, 35]
+D/EGL_emulation( 4184): app_time_stats: avg=1742.20ms min=45.53ms max=3438.87ms count=2
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+D/EGL_emulation( 4184): app_time_stats: avg=75.67ms min=6.90ms max=264.03ms count=13
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderViewport#e9e11 NEEDS-LAYOUT NEEDS-PAINT
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    ListView ListView:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:342:21
+════════════════════════════════════════════════════════════════════════════════
+
+════════ Exception caught by rendering library ═════════════════════════════════
+RenderBox was not laid out: RenderDecoratedBox#9a7fb relayoutBoundary=up16
+'package:flutter/src/rendering/box.dart':
+Failed assertion: line 2251 pos 12: 'hasSize'
+The relevant error-causing widget was:
+    AnimatedContainer AnimatedContainer:file:///D:/Vscode%20Projects/Flutter/git_repos/fluttering-drums/fluttering_drums/lib/widgets/instrument_panel.dart:61:12
+════════════════════════════════════════════════════════════════════════════════
+D/EGL_emulation( 4184): app_time_stats: avg=60.17ms min=10.01ms max=181.38ms count=17
