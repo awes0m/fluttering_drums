@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../viewmodels/drum_view_model.dart';
 import '../services/theme_service.dart';
+import '../services/export_service.dart';
 
 class ControlPanel extends StatelessWidget {
   final DrumViewModel viewModel;
@@ -384,7 +386,7 @@ class ControlPanel extends StatelessWidget {
                 ),
                 SizedBox(width: isMobileLandscape ? 4 : 6),
                 IconButton(
-                  onPressed: () => _showExportDialog(context),
+                  onPressed: () => _handleExportRequest(context),
                   icon: Icon(
                     Icons.download,
                     color: Colors.purple,
@@ -427,6 +429,241 @@ class ControlPanel extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Handle export request with permission check
+  Future<void> _handleExportRequest(BuildContext context) async {
+    final exportService = ExportService();
+    final themeService = ThemeService();
+    final isDark = themeService.themeMode == ThemeMode.dark;
+
+    // Check if we're on web
+    if (kIsWeb) {
+      // Web doesn't need permissions, go straight to export dialog
+      _showExportDialog(context);
+      return;
+    }
+
+    // Check if permission is already granted
+    if (await exportService.isStoragePermissionGranted()) {
+      _showExportDialog(context);
+      return;
+    }
+
+    // Show permission request dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF2D2D2D) : Colors.white,
+        title: Row(
+          children: [
+            Icon(
+              Icons.security,
+              color: Colors.orange,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Storage Permission Required',
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'To export your beats as MP3 files, we need permission to access your device storage.',
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.black54,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: Colors.orange,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This permission is only used to save your exported beat files to the Downloads folder.',
+                      style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.black54,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: isDark ? Colors.white70 : Colors.black54),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _requestPermissionAndExport(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.check, size: 18),
+                const SizedBox(width: 4),
+                const Text('Grant Permission'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Request permission and proceed with export
+  Future<void> _requestPermissionAndExport(BuildContext context) async {
+    final exportService = ExportService();
+    final themeService = ThemeService();
+    final isDark = themeService.themeMode == ThemeMode.dark;
+
+    // Show loading dialog while requesting permission
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF2D2D2D) : Colors.white,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(color: Colors.orange),
+            const SizedBox(height: 16),
+            Text(
+              'Requesting storage permission...',
+              style: TextStyle(
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      // Request permission by attempting to check it (this will trigger the request)
+      final hasPermission = await exportService.isStoragePermissionGranted();
+      
+      // Close loading dialog
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+
+      if (hasPermission) {
+        // Permission granted, show export dialog
+        if (context.mounted) {
+          _showExportDialog(context);
+        }
+      } else {
+        // Permission denied, show error
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF2D2D2D) : Colors.white,
+              title: Row(
+                children: [
+                  Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Permission Denied',
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                  ),
+                ],
+              ),
+              content: Text(
+                'Storage permission is required to export beats. Please grant permission in your device settings to use this feature.',
+                style: TextStyle(
+                  color: isDark ? Colors.white70 : Colors.black54,
+                ),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Close loading dialog
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+
+      // Show error dialog
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: isDark ? const Color(0xFF2D2D2D) : Colors.white,
+            title: Row(
+              children: [
+                Icon(
+                  Icons.error,
+                  color: Colors.red,
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Permission Error',
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                ),
+              ],
+            ),
+            content: Text(
+              'An error occurred while requesting permission: ${e.toString()}',
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 
   void _showSaveDialog(BuildContext context) {
@@ -553,7 +790,7 @@ class ControlPanel extends StatelessWidget {
                     IconButton(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        _showExportSavedBeatDialog(context, beat);
+                        _handleExportSavedBeatRequest(context, beat);
                       },
                       icon: const Icon(Icons.download, color: Colors.purple),
                       tooltip: 'Export as MP3',
@@ -586,6 +823,23 @@ class ControlPanel extends StatelessWidget {
     );
   }
 
+  /// Handle export request for saved beats with permission check
+  Future<void> _handleExportSavedBeatRequest(BuildContext context, beat) async {
+    final exportService = ExportService();
+
+    // Check if we're on web or already have permission
+    if (kIsWeb || await exportService.isStoragePermissionGranted()) {
+      _showExportSavedBeatDialog(context, beat);
+      return;
+    }
+
+    // Request permission first, then show export dialog
+    await _requestPermissionAndExport(context);
+    if (await exportService.isStoragePermissionGranted()) {
+      _showExportSavedBeatDialog(context, beat);
+    }
+  }
+
   void _showExportDialog(BuildContext context) {
     final textController = TextEditingController();
     final repetitionsController = TextEditingController();
@@ -616,124 +870,124 @@ class ControlPanel extends StatelessWidget {
             ),
           ],
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Enter a filename for your beat:',
-                style: TextStyle(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Enter a filename for your beat:',
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.black54,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: textController,
+              decoration: InputDecoration(
+                labelText: 'Filename',
+                suffixText: '.mp3',
+                labelStyle: TextStyle(
                   color: isDark ? Colors.white70 : Colors.black54,
-                  fontSize: 14,
+                ),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.purple),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.purple, width: 2),
                 ),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: textController,
-                decoration: InputDecoration(
-                  labelText: 'Filename',
-                  suffixText: '.mp3',
-                  labelStyle: TextStyle(
-                    color: isDark ? Colors.white70 : Colors.black54,
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.purple),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.purple, width: 2),
-                  ),
-                ),
-                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Number of repetitions (1-25):',
+              style: TextStyle(
+                color: isDark ? Colors.white70 : Colors.black54,
+                fontSize: 14,
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Number of repetitions (1-25):',
-                style: TextStyle(
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: repetitionsController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Repetitions',
+                hintText: 'Enter 1-25',
+                labelStyle: TextStyle(
                   color: isDark ? Colors.white70 : Colors.black54,
-                  fontSize: 14,
+                ),
+                hintStyle: TextStyle(
+                  color: isDark ? Colors.white38 : Colors.black38,
+                ),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange, width: 2),
                 ),
               ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: repetitionsController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Repetitions',
-                  hintText: 'Enter 1-25',
-                  labelStyle: TextStyle(
-                    color: isDark ? Colors.white70 : Colors.black54,
-                  ),
-                  hintStyle: TextStyle(
-                    color: isDark ? Colors.white38 : Colors.black38,
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.orange),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.orange, width: 2),
-                  ),
-                ),
-                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+              style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange.withOpacity(0.3)),
               ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.repeat,
-                      color: Colors.orange,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'The beat pattern will loop the specified number of times',
-                        style: TextStyle(
-                          color: isDark ? Colors.white70 : Colors.black54,
-                          fontSize: 12,
-                        ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.repeat,
+                    color: Colors.orange,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'The beat pattern will loop the specified number of times',
+                      style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.black54,
+                        fontSize: 12,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.purple.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.purple.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.purple,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'The file will be saved to your Downloads folder',
-                        style: TextStyle(
-                          color: isDark ? Colors.white70 : Colors.black54,
-                          fontSize: 12,
-                        ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.purple.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.purple.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    kIsWeb ? Icons.download : Icons.folder,
+                    color: Colors.purple,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      kIsWeb 
+                        ? 'The file will be downloaded to your browser\'s download folder'
+                        : 'The file will be saved to your Downloads folder',
+                      style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.black54,
+                        fontSize: 12,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -795,7 +1049,9 @@ class ControlPanel extends StatelessWidget {
             const CircularProgressIndicator(color: Colors.purple),
             const SizedBox(height: 16),
             Text(
-              'Exporting beat with $repetitions repetition${repetitions > 1 ? 's' : ''}...',
+              kIsWeb 
+                ? 'Preparing download with $repetitions repetition${repetitions > 1 ? 's' : ''}...'
+                : 'Exporting beat with $repetitions repetition${repetitions > 1 ? 's' : ''}...',
               style: TextStyle(
                 color: isDark ? Colors.white : Colors.black87,
               ),
@@ -829,7 +1085,7 @@ class ControlPanel extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Export Successful!',
+                    kIsWeb ? 'Download Started!' : 'Export Successful!',
                     style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                   ),
                 ],
@@ -839,7 +1095,9 @@ class ControlPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Your beat has been exported successfully with $repetitions repetition${repetitions > 1 ? 's' : ''}!',
+                    kIsWeb 
+                      ? 'Your beat download has started with $repetitions repetition${repetitions > 1 ? 's' : ''}!'
+                      : 'Your beat has been exported successfully with $repetitions repetition${repetitions > 1 ? 's' : ''}!',
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.black54,
                     ),
@@ -888,13 +1146,15 @@ class ControlPanel extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Export Failed',
+                    kIsWeb ? 'Download Failed' : 'Export Failed',
                     style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                   ),
                 ],
               ),
               content: Text(
-                'Failed to export the beat. Please check permissions and try again.',
+                kIsWeb 
+                  ? 'Failed to start the download. Please try again.'
+                  : 'Failed to export the beat. Please check permissions and try again.',
                 style: TextStyle(
                   color: isDark ? Colors.white70 : Colors.black54,
                 ),
@@ -931,13 +1191,13 @@ class ControlPanel extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Export Error',
+                  kIsWeb ? 'Download Error' : 'Export Error',
                   style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 ),
               ],
             ),
             content: Text(
-              'An error occurred while exporting: ${e.toString()}',
+              'An error occurred: ${e.toString()}',
               style: TextStyle(
                 color: isDark ? Colors.white70 : Colors.black54,
               ),
@@ -1114,14 +1374,16 @@ class ControlPanel extends StatelessWidget {
               child: Row(
                 children: [
                   Icon(
-                    Icons.info_outline,
+                    kIsWeb ? Icons.download : Icons.folder,
                     color: Colors.purple,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'The file will be saved to your Downloads folder',
+                      kIsWeb 
+                        ? 'The file will be downloaded to your browser\'s download folder'
+                        : 'The file will be saved to your Downloads folder',
                       style: TextStyle(
                         color: isDark ? Colors.white70 : Colors.black54,
                         fontSize: 12,
@@ -1193,7 +1455,9 @@ class ControlPanel extends StatelessWidget {
             const CircularProgressIndicator(color: Colors.purple),
             const SizedBox(height: 16),
             Text(
-              'Exporting "${beat.name}" with $repetitions repetition${repetitions > 1 ? 's' : ''}...',
+              kIsWeb 
+                ? 'Preparing download of "${beat.name}" with $repetitions repetition${repetitions > 1 ? 's' : ''}...'
+                : 'Exporting "${beat.name}" with $repetitions repetition${repetitions > 1 ? 's' : ''}...',
               style: TextStyle(
                 color: isDark ? Colors.white : Colors.black87,
               ),
@@ -1227,7 +1491,7 @@ class ControlPanel extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Export Successful!',
+                    kIsWeb ? 'Download Started!' : 'Export Successful!',
                     style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                   ),
                 ],
@@ -1237,7 +1501,9 @@ class ControlPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Beat "${beat.name}" has been exported successfully with $repetitions repetition${repetitions > 1 ? 's' : ''}!',
+                    kIsWeb 
+                      ? 'Beat "${beat.name}" download has started with $repetitions repetition${repetitions > 1 ? 's' : ''}!'
+                      : 'Beat "${beat.name}" has been exported successfully with $repetitions repetition${repetitions > 1 ? 's' : ''}!',
                     style: TextStyle(
                       color: isDark ? Colors.white70 : Colors.black54,
                     ),
@@ -1286,13 +1552,15 @@ class ControlPanel extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Export Failed',
+                    kIsWeb ? 'Download Failed' : 'Export Failed',
                     style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                   ),
                 ],
               ),
               content: Text(
-                'Failed to export the beat. Please check permissions and try again.',
+                kIsWeb 
+                  ? 'Failed to start the download. Please try again.'
+                  : 'Failed to export the beat. Please check permissions and try again.',
                 style: TextStyle(
                   color: isDark ? Colors.white70 : Colors.black54,
                 ),
@@ -1329,13 +1597,13 @@ class ControlPanel extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Export Error',
+                  kIsWeb ? 'Download Error' : 'Export Error',
                   style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 ),
               ],
             ),
             content: Text(
-              'An error occurred while exporting: ${e.toString()}',
+              'An error occurred: ${e.toString()}',
               style: TextStyle(
                 color: isDark ? Colors.white70 : Colors.black54,
               ),

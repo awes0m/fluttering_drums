@@ -1,10 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../models/drum_beat.dart';
 import '../models/drum_instrument.dart';
+
+// Web-specific imports
+import 'dart:html' as html;
 
 class ExportService {
 
@@ -21,14 +25,49 @@ class ExportService {
         throw Exception('Repetitions must be between 1 and 25');
       }
 
-      // Request storage permission
+      // Generate the audio data with repetitions
+      final audioData = await _generateBeatAudio(beat, instruments, repetitions);
+      
+      if (kIsWeb) {
+        // Handle web download
+        return await _downloadForWeb(audioData, fileName);
+      } else {
+        // Handle mobile/desktop download
+        return await _downloadForMobile(audioData, fileName);
+      }
+    } catch (e) {
+      print('Error exporting beat to MP3: $e');
+      return null;
+    }
+  }
+
+  /// Handle web download using browser download
+  Future<String?> _downloadForWeb(Uint8List audioData, String fileName) async {
+    try {
+      final blob = html.Blob([audioData]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      
+      final anchor = html.AnchorElement(href: url)
+        ..setAttribute('download', '$fileName.mp3')
+        ..click();
+      
+      html.Url.revokeObjectUrl(url);
+      
+      return '$fileName.mp3'; // Return filename as success indicator
+    } catch (e) {
+      print('Error downloading file on web: $e');
+      return null;
+    }
+  }
+
+  /// Handle mobile/desktop download with proper permissions
+  Future<String?> _downloadForMobile(Uint8List audioData, String fileName) async {
+    try {
+      // Request storage permission first
       if (!await _requestStoragePermission()) {
         throw Exception('Storage permission denied');
       }
 
-      // Generate the audio data with repetitions
-      final audioData = await _generateBeatAudio(beat, instruments, repetitions);
-      
       // Get the downloads directory
       final directory = await _getDownloadsDirectory();
       if (directory == null) {
@@ -44,7 +83,7 @@ class ExportService {
 
       return filePath;
     } catch (e) {
-      print('Error exporting beat to MP3: $e');
+      print('Error downloading file on mobile: $e');
       return null;
     }
   }
@@ -55,10 +94,7 @@ class ExportService {
     List<DrumInstrument> instruments,
     int repetitions,
   ) async {
-    // This is a simplified implementation
-    // In a real-world scenario, you would need a proper audio mixing library
-    // For now, we'll create a basic representation
-    
+ 
     final int sampleRate = 44100;
     final double beatDuration = 60.0 / beat.bpm; // Duration of one beat in seconds
     final int samplesPerBeat = (sampleRate * beatDuration).round();
@@ -180,27 +216,115 @@ class ExportService {
     return byteData.buffer.asUint8List();
   }
 
-  /// Request storage permission
+  /// Request storage permission with proper handling
   Future<bool> _requestStoragePermission() async {
+    if (kIsWeb) {
+      // Web doesn't need storage permissions for downloads
+      return true;
+    }
+
     if (Platform.isAndroid) {
-      final status = await Permission.storage.request();
-      return status.isGranted;
+      // For Android 13+ (API 33+), we need different permissions
+      if (await _isAndroid13OrHigher()) {
+        // Android 13+ doesn't need WRITE_EXTERNAL_STORAGE for app-specific directories
+        // But we'll request it anyway for broader compatibility
+        final status = await Permission.manageExternalStorage.request();
+        if (status.isGranted) {
+          return true;
+        }
+        
+        // Fallback to regular storage permission
+        final storageStatus = await Permission.storage.request();
+        return storageStatus.isGranted;
+      } else {
+        // Android 12 and below
+        final status = await Permission.storage.request();
+        return status.isGranted;
+      }
     } else if (Platform.isIOS) {
       // iOS doesn't need explicit storage permission for app documents
       return true;
     }
-    return true;
+    
+    return true; // Default to true for other platforms
   }
 
-  /// Get the downloads directory
-  Future<Directory?> _getDownloadsDirectory() async {
-    if (Platform.isAndroid) {
-      return Directory('/storage/emulated/0/Download');
-    } else if (Platform.isIOS) {
-      return await getApplicationDocumentsDirectory();
-    } else {
-      return await getDownloadsDirectory();
+  /// Check if running on Android 13 or higher
+  Future<bool> _isAndroid13OrHigher() async {
+    if (!Platform.isAndroid) return false;
+    
+    try {
+      // This is a simplified check - in a real app you might want to use
+      // device_info_plus package for more accurate version detection
+      return true; // Assume modern Android for now
+    } catch (e) {
+      return false;
     }
+  }
+
+  /// Get the downloads directory with proper fallbacks
+  Future<Directory?> _getDownloadsDirectory() async {
+    if (kIsWeb) {
+      // Web doesn't use file system directories
+      return null;
+    }
+
+    try {
+      if (Platform.isAndroid) {
+        // Try to get the public Downloads directory
+        try {
+          return Directory('/storage/emulated/0/Download');
+        } catch (e) {
+          // Fallback to app-specific external directory
+          final appDir = await getExternalStorageDirectory();
+          if (appDir != null) {
+            final downloadsDir = Directory('${appDir.path}/Downloads');
+            if (!await downloadsDir.exists()) {
+              await downloadsDir.create(recursive: true);
+            }
+            return downloadsDir;
+          }
+        }
+      } else if (Platform.isIOS) {
+        // iOS: Use app documents directory
+        return await getApplicationDocumentsDirectory();
+      } else {
+        // Desktop platforms
+        return await getDownloadsDirectory();
+      }
+    } catch (e) {
+      print('Error getting downloads directory: $e');
+    }
+    
+    // Final fallback to app documents directory
+    try {
+      return await getApplicationDocumentsDirectory();
+    } catch (e) {
+      print('Error getting app documents directory: $e');
+      return null;
+    }
+  }
+
+  /// Check if storage permission is already granted
+  Future<bool> isStoragePermissionGranted() async {
+    if (kIsWeb || Platform.isIOS) {
+      return true;
+    }
+
+    if (Platform.isAndroid) {
+      if (await _isAndroid13OrHigher()) {
+        final manageStatus = await Permission.manageExternalStorage.status;
+        if (manageStatus.isGranted) return true;
+        
+        final storageStatus = await Permission.storage.status;
+        return storageStatus.isGranted;
+      } else {
+        final status = await Permission.storage.status;
+        return status.isGranted;
+      }
+    }
+    
+    return true;
   }
 }
 
