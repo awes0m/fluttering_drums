@@ -1,6 +1,8 @@
 # Fluttering Drums 🥁
 
 A modern Flutter application that replicates the functionality of a digital drum machine, converted from a Python Pygame application.
+Android Download- [here](buillt_app\fdrums_byAwesom.apk)
+
 
 ## ✨ Features
 
@@ -33,17 +35,18 @@ This application follows **MVVM (Model-View-ViewModel)** architecture with clean
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd fluttering_drums
    ```
-
 2. **Install dependencies**
+
    ```bash
    flutter pub get
    ```
-
 3. **Run the application**
+
    ```bash
    flutter run
    ```
@@ -68,18 +71,21 @@ This application follows **MVVM (Model-View-ViewModel)** architecture with clean
 ## 🎨 UI Components
 
 ### Drum Grid
+
 - Visual representation of your beat pattern
 - Orange highlight shows current beat during playback
 - Green squares indicate active beats
 - Click to toggle beats on/off
 
 ### Instrument Panel
+
 - Left sidebar with all drum instruments
 - Toggle switches to enable/disable instruments
 - Individual play buttons for testing sounds
 - Visual feedback for active/inactive instruments
 
 ### Control Panel
+
 - Large play/pause button
 - BPM adjustment controls
 - Beat count controls
@@ -138,6 +144,7 @@ This application follows **MVVM (Model-View-ViewModel)** architecture with clean
 ### Debug Mode
 
 Run with debug information:
+
 ```bash
 flutter run --debug
 ```

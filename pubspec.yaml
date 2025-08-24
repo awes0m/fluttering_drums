@@ -55,6 +55,7 @@ dependencies:
   # HTTP for downloading
   http: ^1.2.1
   url_launcher: ^6.3.2
+  web: ^0.5.1
 
 dev_dependencies:
   flutter_test:
