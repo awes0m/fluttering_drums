@@ -1,6 +1,7 @@
 # Fluttering Drums 🥁
 
 A modern Flutter application that replicates the functionality of a digital drum machine, converted from a Python Pygame application.
+![fluttering_drums](fluttering_drums.jpg)
 Android Download- [From here](https://github.com/awes0m/fluttering_drums/blob/master/buillt_app/fdrums_byAwesom.apk)
 
 
